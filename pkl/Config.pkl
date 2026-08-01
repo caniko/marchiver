@@ -1,0 +1,20 @@
+/// Marchiver evaluates configuration, plans, manifests, and journals as trusted
+/// local Pkl. Do not load documents from untrusted sources.
+typealias SourceDisposition = "quarantine"|"preserve"|"delete"
+typealias Profile = "copy"|"av1"
+
+class Av1Config {
+  crf: Int = 20
+  preset: Int = 6
+  container: "mkv" = "mkv"
+}
+
+schemaVersion: Int = 1
+sourceDisposition: SourceDisposition = "quarantine"
+defaultProfile: Profile = "copy"
+av1: Av1Config = new {
+  crf = 20
+  preset = 6
+  container = "mkv"
+}
+durationToleranceSeconds: Float = 0.5
