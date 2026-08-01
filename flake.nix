@@ -37,7 +37,10 @@
         overlays = [(import rust-overlay)];
       };
 
-      toolchain = rs-harbor.lib.mkToolchain {inherit pkgs;};
+      toolchain = rs-harbor.lib.mkToolchain {
+        inherit pkgs;
+        cache.enable = false;
+      };
       inherit (toolchain) craneLib rustToolchain;
       src = lib.cleanSourceWith {
         src = ./.;
