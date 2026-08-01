@@ -40,6 +40,7 @@
       toolchain = rs-harbor.lib.mkToolchain {
         inherit pkgs;
         cache.enable = false;
+        crossTargets = ["x86_64-unknown-linux-musl"];
       };
       inherit (toolchain) craneLib rustToolchain;
       src = lib.cleanSourceWith {
@@ -128,6 +129,8 @@
       lib = {inherit defaultConfig;};
       devShells.default = craneLib.devShell {
         checks = self.checks.${system};
+        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
+        CC_x86_64_unknown_linux_musl = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
         packages = with pkgs;
           [
             cargo-about
@@ -146,6 +149,7 @@
             minisign
             nodejs
             pkl
+            pkgsMusl.stdenv.cc
             pre-commit
             rpm
             util-linux

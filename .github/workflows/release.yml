@@ -98,8 +98,10 @@ jobs:
           export VERSION IS_PRERELEASE
           mkdir -p release
           mkdir -p release target
-          nix build .#default --out-link target/marchiver
-          tar -C target/marchiver -czf "release/marchiver-${VERSION}-x86_64-linux.tar.gz" bin/marchiver
+          nix develop -c cargo build --release --locked --target x86_64-unknown-linux-musl
+          ldd target/x86_64-unknown-linux-musl/release/marchiver | grep -q 'statically linked'
+          target/x86_64-unknown-linux-musl/release/marchiver --version | grep -qx "${VERSION}"
+          tar -C target/x86_64-unknown-linux-musl/release -czf "release/marchiver-${VERSION}-x86_64-linux.tar.gz" marchiver
       - name: Generate release checksums
         run: |
           set -euo pipefail
