@@ -3,8 +3,8 @@
 
   inputs = {
     rs-harbor = {
-      url = "git+https://codeberg.org/caniko/rs-harbor.git?ref=trunk&rev=b40cd4c4fdf6133962f67bd68a48bfd5d554d47f";
-      inputs.nix-opencode-lsp.url = "github:caniko/nix-opencode-lsp";
+      url = "git+ssh://git@codeberg.org/caniko/rs-harbor.git?ref=trunk&rev=f209ddbca3fdbb0dc31fa3886ccc2ff7369c18ac";
+      inputs.nix-opencode-lsp.url = "git+ssh://git@github.com/caniko/nix-opencode-lsp.git?ref=trunk";
     };
     nixpkgs.follows = "rs-harbor/nixpkgs";
     rust-overlay.follows = "rs-harbor/rust-overlay";
@@ -13,7 +13,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
     nix-pklx-src = {
-      url = "git+https://codefloe.com/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
+      url = "git+ssh://git@codeberg.org/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
       flake = false;
     };
   };
