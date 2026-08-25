@@ -13,7 +13,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
     nix-pklx-src = {
-      url = "git+ssh://git@codeberg.org/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
+      url = "git+ssh://git@github.com/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
       flake = false;
     };
   };
