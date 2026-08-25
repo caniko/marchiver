@@ -127,11 +127,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1784288435,
-        "narHash": "sha256-ReRHaLgr/uVqdD8afFSn+myXIfpHeOhP0yYe0TJqAA8=",
+        "lastModified": 1787424939,
+        "narHash": "sha256-O2tBn84NNuHrnqNVxx/XqsXwfYvS1YwBh+7CBnbCYsk=",
         "owner": "cachix",
         "repo": "git-hooks.nix",
-        "rev": "43b3c1ab9d40fb1dbb008f451988a91e375825e9",
+        "rev": "809414f0cdadf82cf11b06c2b29ba9b3168b3297",
         "type": "github"
       },
       "original": {
@@ -217,13 +217,13 @@
         "rev": "ed0e5889bcbba74b2e43593954327e3631126908",
         "revCount": 31,
         "type": "git",
-        "url": "ssh://git@codeberg.org/caniko/nix-pklx.git"
+        "url": "ssh://git@github.com/caniko/nix-pklx.git"
       },
       "original": {
         "ref": "0.1.0",
         "rev": "ed0e5889bcbba74b2e43593954327e3631126908",
         "type": "git",
-        "url": "ssh://git@codeberg.org/caniko/nix-pklx.git"
+        "url": "ssh://git@github.com/caniko/nix-pklx.git"
       }
     },
     "nixpkgs": {
@@ -366,13 +366,13 @@
         "rev": "05cc4f162b55fa904b687db1821e2463fa813e50",
         "revCount": 185,
         "type": "git",
-        "url": "https://github.com/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/harbor-rs.git"
       },
       "original": {
         "ref": "trunk",
         "rev": "05cc4f162b55fa904b687db1821e2463fa813e50",
         "type": "git",
-        "url": "https://github.com/caniko/rs-harbor.git"
+        "url": "https://github.com/caniko/harbor-rs.git"
       }
     },
     "rust-overlay": {
@@ -461,11 +461,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1785360170,
-        "narHash": "sha256-XE1lKgQ3eIO3E7zWryqcRsax+mYXod/5RHBn4YaR9YE=",
+        "lastModified": 1786901030,
+        "narHash": "sha256-WSFCsDSE5ffgD2MqzkM2CYjeFiKhRF/dJUN8uedb6YE=",
         "owner": "numtide",
         "repo": "treefmt-nix",
-        "rev": "d1187f8bc71fb8aab02395869ec3f5c1920f75c0",
+        "rev": "27b3b12a8e6375f28ebe122f07d230ca5459bbfa",
         "type": "github"
       },
       "original": {
