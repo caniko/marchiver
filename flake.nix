@@ -138,6 +138,13 @@
             '';
         };
       lib = {inherit defaultConfig;};
+      devShells.msrv = pkgs.mkShell {
+        inputsFrom = [(self.devShells.${system}.default.overrideAttrs (_: {shellHook = "";}))];
+        packages = [pkgs.rust-bin.stable."1.88.0".minimal];
+        RUSTFLAGS = "";
+        CARGO_ENCODED_RUSTFLAGS = "";
+        RUSTC_WRAPPER = "";
+      };
       devShells.default = craneLib.devShell {
         checks = self.checks.${system};
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
