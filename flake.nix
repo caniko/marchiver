@@ -95,6 +95,17 @@
       };
     in {
       packages.default = package;
+      apps.push-flake-inputs = rs-harbor.lib.mkAtticPush {
+        inherit pkgs;
+        flake = ".";
+        adapter = rs-harbor.lib.mkAdapter {
+          attic = {
+            endpoint = "https://attic.candee.baby";
+            cache = "canix";
+            tokenEnvVar = "ATTIC_TOKEN";
+          };
+        };
+      };
       formatter = treefmtEval.config.build.wrapper;
       checks =
         {
