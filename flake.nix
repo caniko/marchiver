@@ -95,6 +95,17 @@
       };
     in {
       packages.default = package;
+      apps.push-flake-inputs = rs-harbor.lib.mkAtticPush {
+        inherit pkgs;
+        flake = ".";
+        adapter = rs-harbor.lib.mkAdapter {
+          attic = {
+            endpoint = "https://attic.candee.baby";
+            cache = "canix";
+            tokenEnvVar = "ATTIC_TOKEN";
+          };
+        };
+      };
       formatter = treefmtEval.config.build.wrapper;
       checks =
         {
@@ -127,6 +138,13 @@
             '';
         };
       lib = {inherit defaultConfig;};
+      devShells.msrv = pkgs.mkShell {
+        inputsFrom = [(self.devShells.${system}.default.overrideAttrs (_: {shellHook = "";}))];
+        packages = [pkgs.rust-bin.stable."1.88.0".minimal];
+        RUSTFLAGS = "";
+        CARGO_ENCODED_RUSTFLAGS = "";
+        RUSTC_WRAPPER = "";
+      };
       devShells.default = craneLib.devShell {
         checks = self.checks.${system};
         CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";

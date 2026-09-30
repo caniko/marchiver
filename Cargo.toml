@@ -47,6 +47,7 @@ nix_builds = [".#default"]
 
 [package.metadata.simit.prebuild]
 publish_attic = true
+attic_app = ".#push-flake-inputs"
 
 [package.metadata.simit.release.github]
 repo = "caniko/marchiver"
