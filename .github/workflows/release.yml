@@ -43,6 +43,11 @@ jobs:
             substituters = https://attic.candee.baby/canix https://cache.nixos.org
             trusted-public-keys = canix:lPzPzKrmYqW5Rxa5r0uQWvCqD3S5nx0h2eCy7XD5JM8= cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=
 
+      - name: Configure GitHub input transport
+        run: |
+          git config --global --add url.https://github.com/.insteadOf ssh://git@github.com/
+          git config --global --add url.https://github.com/.insteadOf git@github.com:
+
       - name: Validate tag
         run: |
           set -euo pipefail
