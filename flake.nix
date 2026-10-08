@@ -111,15 +111,16 @@
       checks =
         {
           default = package;
-          attic-publication-contract = pkgs.runCommand "marchiver-attic-publication-contract" {
-            nativeBuildInputs = [pkgs.gnugrep];
-          } ''
-            publisher=${self.apps.${system}.push-flake-inputs.program}
-            grep -Fq -- '${package}' "$publisher"
-            grep -Fq 'nix path-info -r' "$publisher"
-            grep -Fq 'nix flake archive' "$publisher"
-            touch "$out"
-          '';
+          attic-publication-contract =
+            pkgs.runCommand "marchiver-attic-publication-contract" {
+              nativeBuildInputs = [pkgs.gnugrep];
+            } ''
+              publisher=${self.apps.${system}.push-flake-inputs.program}
+              grep -Fq -- '${package}' "$publisher"
+              grep -Fq 'nix path-info -r' "$publisher"
+              grep -Fq 'nix flake archive' "$publisher"
+              touch "$out"
+            '';
           formatting = treefmtEval.config.build.check self;
           clippy = craneLib.cargoClippy (commonArgs
             // {
