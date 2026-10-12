@@ -131,6 +131,10 @@
             '';
         };
       lib = {inherit defaultConfig;};
+      devShells.msrv = pkgs.mkShell {
+        packages = [pkgs.rust-bin.stable."1.88.0".default pkgs.pkg-config];
+        buildInputs = [pkgs.openssl];
+      };
       devShells.default = craneLib.devShell ({
           checks = self.checks.${system};
           packages = with pkgs;

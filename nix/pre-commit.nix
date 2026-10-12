@@ -29,7 +29,7 @@
   cargo-msrv = {
     enable = true;
     name = "cargo check MSRV";
-    entry = "${pkgs.coreutils}/bin/env CARGO_HOME=/tmp/marchiver-msrv-cargo CARGO_TARGET_DIR=target/msrv ${pkgs.rust-bin.stable."1.88.0".default}/bin/cargo check --workspace --all-features";
+    entry = "${pkgs.coreutils}/bin/env CARGO_HOME=/tmp/marchiver-msrv-cargo CARGO_TARGET_DIR=target/msrv RUSTC=${pkgs.rust-bin.stable."1.88.0".default}/bin/rustc RUSTDOC=${pkgs.rust-bin.stable."1.88.0".default}/bin/rustdoc ${pkgs.rust-bin.stable."1.88.0".default}/bin/cargo check --workspace --all-features";
     extraPackages = [pkgs.rust-bin.stable."1.88.0".default];
     pass_filenames = false;
     stages = ["pre-push" "manual"];
