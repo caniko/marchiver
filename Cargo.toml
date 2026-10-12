@@ -35,6 +35,7 @@ scope = "full"
 [package.metadata.simit.ci]
 platform = "github"
 runtime = "nix"
+all_features = false
 with_nextest = true
 with_msrv = true
 with_audit = true
@@ -47,6 +48,7 @@ nix_builds = [".#default"]
 
 [package.metadata.simit.prebuild]
 publish_attic = true
+attic_app = ".#push-cache"
 
 [package.metadata.simit.release.github]
 repo = "caniko/marchiver"

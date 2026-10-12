@@ -54,6 +54,20 @@ cargo llvm-cov --all-features --workspace --summary-only --fail-under-lines 80
 
 Without Nix, Rust 1.88 or newer and FFmpeg are required.
 
+### Pkl configuration for Nix
+
+`pkl/Config.pkl` owns the defaults. Nix reads the checked-in
+`nix/generated/default-config.nix` projection so evaluating any supported system
+does not require a build. The `pkl-contract` check compares that projection with
+the evaluated Pkl data.
+
+After changing the Pkl defaults, regenerate and format the projection:
+
+```sh
+nix develop -c pklx eval pkl/Config.pkl --output nix/generated/default-config.nix
+nix develop -c treefmt nix/generated/default-config.nix
+```
+
 ## License
 
 Licensed under either of:

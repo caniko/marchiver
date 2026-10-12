@@ -2,25 +2,25 @@
   description = "Rust project";
 
   inputs = {
-    rs-harbor = {
-      url = "git+https://github.com/caniko/harbor-rs.git?ref=trunk&rev=05cc4f162b55fa904b687db1821e2463fa813e50";
+    harbor = {
+      url = "git+https://github.com/caniko/harbor.git?ref=feat/harbor-monorepo-components&rev=e8b1996580e4ecd51dd402edf4a16d9df88e3a1b";
       inputs.nix-opencode-lsp.url = "git+ssh://git@github.com/caniko/nix-opencode-lsp.git?ref=trunk";
     };
-    nixpkgs.follows = "rs-harbor/nixpkgs";
-    rust-overlay.follows = "rs-harbor/rust-overlay";
-    crane.follows = "rs-harbor/crane";
+    nixpkgs.follows = "harbor/nixpkgs";
+    rust-overlay.follows = "harbor/rust-overlay";
+    crane.follows = "harbor/crane";
     flake-utils.url = "github:numtide/flake-utils";
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
     nix-pklx-src = {
-      url = "git+ssh://git@github.com/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
+      url = "git+https://github.com/caniko/nix-pklx.git?ref=migrate/harbor-combined-20261012&rev=400f2765a4ebd69e353c79e5fcf2f8d689c91138";
       flake = false;
     };
   };
 
   outputs = {
     self,
-    rs-harbor,
+    harbor,
     nixpkgs,
     rust-overlay,
     crane,
@@ -32,12 +32,17 @@
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       lib = nixpkgs.lib;
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [(import rust-overlay)];
-      };
+      pkgs =
+        import (
+          if system == "x86_64-darwin"
+          then harbor.inputs.nixpkgs-darwin
+          else nixpkgs
+        ) {
+          inherit system;
+          overlays = [(import rust-overlay)];
+        };
 
-      toolchain = rs-harbor.lib.mkToolchain {
+      toolchain = harbor.lib.rust.mkToolchain {
         inherit pkgs;
         cache.enable = false;
         crossTargets = ["x86_64-unknown-linux-musl"];
@@ -79,11 +84,7 @@
             --set SSL_CERT_FILE ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt
         '';
       };
-      pklxLib = import "${nix-pklx-src}/lib" {
-        inherit lib pkgs;
-        pklx = pklxPackage;
-      };
-      defaultConfig = pklxLib.importPkl ./pkl/Config.pkl;
+      defaultConfig = import ./nix/generated/default-config.nix;
       treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix);
       pre-commit-check = git-hooks.lib.${system}.run {
         src = ./.;
@@ -117,51 +118,65 @@
         // {
           pkl-contract = assert defaultConfig.schemaVersion == 1;
             pkgs.runCommand "marchiver-pkl-contract" {
-              nativeBuildInputs = [pkgs.pkl pklxPackage];
+              nativeBuildInputs = [pkgs.pkl pklxPackage pkgs.jq];
             } ''
               pkl eval -f json ${./pkl/Config.pkl} > config.json
               pklx eval --data-only ${./pkl/Config.pkl} > config.nix
               test -s config.json
               test -s config.nix
+              jq --sort-keys . config.json > actual.json
+              jq --sort-keys . ${pkgs.writeText "marchiver-default-config.json" (builtins.toJSON defaultConfig)} > expected.json
+              diff -u expected.json actual.json
               touch "$out"
             '';
         };
       lib = {inherit defaultConfig;};
-      devShells.default = craneLib.devShell {
-        checks = self.checks.${system};
-        CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
-        CC_x86_64_unknown_linux_musl = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
-        packages = with pkgs;
-          [
-            cargo-about
-            cargo-audit
-            cargo-cyclonedx
-            cargo-deny
-            cargo-llvm-cov
-            cargo-sbom
-            cargo-nextest
-            cosign
-            file
-            ffmpeg-full
-            gnutar
-            gzip
-            jq
-            minisign
-            nodejs
-            pkl
-            pkgsMusl.stdenv.cc
-            pre-commit
-            rpm
-            util-linux
-            unzip
-            zip
-            reprepro
-            rust-analyzer
-            taplo
-          ]
-          ++ [pklxPackage]
-          ++ pre-commit-check.enabledPackages;
-        shellHook = pre-commit-check.shellHook;
+      devShells.default = craneLib.devShell ({
+          checks = self.checks.${system};
+          packages = with pkgs;
+            [
+              cargo-about
+              cargo-audit
+              cargo-cyclonedx
+              cargo-deny
+              cargo-llvm-cov
+              cargo-sbom
+              cargo-nextest
+              cosign
+              file
+              ffmpeg-full
+              gnutar
+              gzip
+              jq
+              minisign
+              nodejs
+              pkl
+              pre-commit
+              unzip
+              zip
+              rust-analyzer
+              taplo
+            ]
+            # Linux release tooling is not part of the native macOS shell.
+            ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux [pkgsMusl.stdenv.cc rpm util-linux reprepro]
+            ++ [pklxPackage treefmtEval.config.build.wrapper]
+            ++ pre-commit-check.enabledPackages;
+          shellHook = pre-commit-check.shellHook;
+        }
+        // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+          CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
+          CC_x86_64_unknown_linux_musl = "${pkgs.pkgsMusl.stdenv.cc}/bin/cc";
+        });
+      apps.push-cache = harbor.lib.rust.mkAtticPush {
+        inherit pkgs;
+        adapter = harbor.lib.rust.mkAdapter {
+          attic = {
+            endpoint = "https://attic.candee.baby";
+            cache = "canix";
+          };
+        };
+        flake = ".";
+        paths = [self.packages.${system}.default];
       };
       apps.local-check-fast = {
         type = "app";
