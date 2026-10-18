@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Use authenticated Pklx 0.2.0 and patched TLS dependencies, removing the vulnerable ZIP-8 and QUIC dependency chains.
 - Fetch public CI inputs over HTTPS without changing their locked sources.
 - Evaluate Nix configuration from a checked sidecar without building Pklx during evaluation.
 - Restrict Nix outputs to supported Linux and ARM64 macOS platforms, keeping musl tooling Linux-only.
