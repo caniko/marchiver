@@ -23,7 +23,6 @@
     rs-harbor,
     nixpkgs,
     rust-overlay,
-    crane,
     flake-utils,
     treefmt-nix,
     git-hooks,
@@ -31,7 +30,7 @@
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
-      lib = nixpkgs.lib;
+      inherit (nixpkgs) lib;
       pkgs = import nixpkgs {
         inherit system;
         overlays = [(import rust-overlay)];
@@ -161,8 +160,22 @@
           ]
           ++ [pklxPackage]
           ++ pre-commit-check.enabledPackages;
-        shellHook = pre-commit-check.shellHook;
+        inherit (pre-commit-check) shellHook;
       };
+      apps.push-cache = let
+        attic = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package.metadata.simit.release.attic;
+      in
+        rs-harbor.lib.mkAtticPush {
+          inherit pkgs;
+          adapter = rs-harbor.lib.mkAdapter {
+            attic = {
+              endpoint = attic.url;
+              inherit (attic) cache;
+              tokenEnvVar = attic.token_secret;
+            };
+          };
+          paths = [package];
+        };
       apps.local-check-fast = {
         type = "app";
         program = let
