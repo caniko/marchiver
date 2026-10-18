@@ -44,6 +44,13 @@ cargo test
 cargo clippy --all-targets --all-features -- --deny warnings
 ```
 
+The flake supports x86_64 Linux, ARM64 Linux, and ARM64 macOS. Its pinned
+Nixpkgs 26.11 no longer supports Intel macOS.
+
+After changing `pkl/Config.pkl`, regenerate the Nix-consumed sidecar with
+`pkl eval -f json -o pkl/Config.json pkl/Config.pkl`. The `pkl-contract` check
+verifies that the sidecar matches the canonical Pkl configuration.
+
 Coverage uses LLVM instrumentation because rs-harbor's development shell
 defaults to Cranelift:
 
