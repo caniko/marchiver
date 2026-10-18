@@ -13,7 +13,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
     git-hooks.url = "github:cachix/git-hooks.nix";
     nix-pklx-src = {
-      url = "git+https://github.com/caniko/nix-pklx.git?ref=0.1.0&rev=ed0e5889bcbba74b2e43593954327e3631126908";
+      url = "git+https://github.com/caniko/nix-pklx.git?ref=trunk&rev=9267ed29b30166839648af4fbd8affe6b2a811cf";
       flake = false;
     };
   };
@@ -68,7 +68,7 @@
         });
       pklxPackage = pkgs.rustPlatform.buildRustPackage {
         pname = "pklx";
-        version = "0.1.0";
+        version = "0.2.0";
         src = nix-pklx-src;
         cargoLock.lockFile = "${nix-pklx-src}/Cargo.lock";
         nativeBuildInputs = [pkgs.makeWrapper];
