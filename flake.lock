@@ -200,30 +200,31 @@
         "rev": "7e03c2bfd32c35da8c6531a5867dfdb66eeae766",
         "revCount": 8,
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
+        "url": "https://github.com/caniko/nix-opencode-lsp.git"
       },
       "original": {
         "ref": "trunk",
+        "rev": "7e03c2bfd32c35da8c6531a5867dfdb66eeae766",
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-opencode-lsp.git"
+        "url": "https://github.com/caniko/nix-opencode-lsp.git"
       }
     },
     "nix-pklx-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1785586402,
-        "narHash": "sha256-UWHubMEOjEU/GlXHxEN+mx+XKRsUkLW9g4POn+Uq18U=",
-        "ref": "0.1.0",
-        "rev": "ed0e5889bcbba74b2e43593954327e3631126908",
-        "revCount": 31,
+        "lastModified": 1792271026,
+        "narHash": "sha256-+3weDrym6m/+bxpai/rbmodv4Eq2iwaRRaksSj1cJsQ=",
+        "ref": "trunk",
+        "rev": "9267ed29b30166839648af4fbd8affe6b2a811cf",
+        "revCount": 58,
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-pklx.git"
+        "url": "https://github.com/caniko/nix-pklx.git"
       },
       "original": {
-        "ref": "0.1.0",
-        "rev": "ed0e5889bcbba74b2e43593954327e3631126908",
+        "ref": "trunk",
+        "rev": "9267ed29b30166839648af4fbd8affe6b2a811cf",
         "type": "git",
-        "url": "ssh://git@github.com/caniko/nix-pklx.git"
+        "url": "https://github.com/caniko/nix-pklx.git"
       }
     },
     "nixpkgs": {

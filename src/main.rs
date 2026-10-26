@@ -440,7 +440,7 @@ async fn eval_document(path: &Path, expected_kind: &str) -> Result<Value> {
         })?;
     require_schema(&value, expected_kind)?;
     let kind = object_field(&value, "kind")?;
-    if !matches!(kind, Value::String(kind) if kind == expected_kind) {
+    if !matches!(kind, Value::String(kind) if kind.as_ref() == expected_kind) {
         return Err(format!("expected {expected_kind} Pkl document"));
     }
     Ok(value)
