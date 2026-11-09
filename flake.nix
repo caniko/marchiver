@@ -2,10 +2,7 @@
   description = "Rust project";
 
   inputs = {
-    rs-harbor = {
-      url = "git+https://github.com/caniko/harbor-rs.git?ref=trunk&rev=05cc4f162b55fa904b687db1821e2463fa813e50";
-      inputs.nix-opencode-lsp.url = "git+https://github.com/caniko/nix-opencode-lsp.git?ref=trunk&rev=7e03c2bfd32c35da8c6531a5867dfdb66eeae766";
-    };
+    rs-harbor.url = "git+https://github.com/caniko/harbor-rs.git?ref=trunk&rev=6055d7d2b3a05d7d91d50938c7fb6f862a5eec85";
     nixpkgs.follows = "rs-harbor/nixpkgs";
     rust-overlay.follows = "rs-harbor/rust-overlay";
     crane.follows = "rs-harbor/crane";
@@ -54,6 +51,9 @@
         strictDeps = true;
       };
       cargoArtifacts = craneLib.buildDepsOnly commonArgs;
+      cargoPackage = (builtins.fromTOML (builtins.readFile ./Cargo.toml)).package;
+      pname = cargoPackage.name;
+      version = cargoPackage.version;
       package = craneLib.buildPackage (commonArgs
         // {
           inherit cargoArtifacts;
@@ -80,6 +80,32 @@
         '';
       };
       defaultConfig = builtins.fromJSON (builtins.readFile ./pkl/Config.json);
+      # The release archive ships the static musl binary, not the dev package
+      # (which is dynamically linked and wrapped with ffmpeg).
+      releaseCrossPackages = rs-harbor.lib.mkCrossPackages {
+        inherit pkgs pname craneLib commonArgs;
+        cross = rs-harbor.lib.mkCross {inherit pkgs system;};
+        buildCache = null;
+        targets = ["x86_64-linux-musl"];
+        targetArgs."x86_64-linux-musl".doCheck = false;
+      };
+      # Keeps the published asset name and flat archive layout that existing
+      # release download links and checksums already use.
+      releaseBundle = let
+        archive = rs-harbor.lib.mkReleaseArchive {
+          inherit pkgs pname version;
+          name = "${pname}-${version}-x86_64-linux.tar.gz";
+          package = releaseCrossPackages."${pname}-x86_64-linux-musl";
+          entries = {"${pname}" = "bin/${pname}";};
+          system = "x86_64-linux";
+          rustTarget = "x86_64-unknown-linux-musl";
+          validation = "static-elf";
+        };
+      in
+        rs-harbor.lib.mkReleaseBundle {
+          inherit pkgs pname version;
+          artifacts = {inherit archive;};
+        };
       treefmtEval = treefmt-nix.lib.evalModule pkgs (import ./nix/treefmt.nix);
       pre-commit-check = git-hooks.lib.${system}.run {
         src = ./.;
@@ -90,7 +116,11 @@
         };
       };
     in {
-      packages.default = package;
+      packages =
+        {default = package;}
+        // lib.optionalAttrs (system == "x86_64-linux") {
+          release-bundle = releaseBundle;
+        };
       formatter = treefmtEval.config.build.wrapper;
       checks =
         {
@@ -122,6 +152,15 @@
               test -s config.nix
               touch "$out"
             '';
+        }
+        // lib.optionalAttrs (system == "x86_64-linux") {
+          # `cargo binstall marchiver` reads the crate manifest, so keep its
+          # [package.metadata.binstall] equal to release-bundle's archives.
+          binstall-metadata = rs-harbor.lib.mkBinstallCheck {
+            inherit pkgs;
+            bundle = releaseBundle;
+            cargoToml = ./Cargo.toml;
+          };
         };
       lib = {inherit defaultConfig;};
       devShells.default = craneLib.devShell ({
