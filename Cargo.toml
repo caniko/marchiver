@@ -75,3 +75,12 @@ cache = "canix"
 url = "https://attic.candee.baby"
 token_name = "canix"
 token_secret = "ATTIC_TOKEN"
+
+[package.metadata.binstall.overrides.x86_64-unknown-linux-gnu]
+pkg-url = "{ repo }/releases/download/{ version }/marchiver-{ version }-x86_64-linux.tar.gz"
+pkg-fmt = "tgz"
+bin-dir = "{ bin }{ binary-ext }"
+[package.metadata.binstall.overrides.x86_64-unknown-linux-musl]
+pkg-url = "{ repo }/releases/download/{ version }/marchiver-{ version }-x86_64-linux.tar.gz"
+pkg-fmt = "tgz"
+bin-dir = "{ bin }{ binary-ext }"
